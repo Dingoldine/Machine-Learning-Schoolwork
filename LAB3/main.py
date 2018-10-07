@@ -79,11 +79,6 @@ class BayesClassifier(object):
         return classifyBayes(X, self.prior, self.mu, self.sigma)
 
 
-# ## Test the Maximum Likelihood estimates
-# 
-# Call `genBlobs` and `plotGaussian` to verify your estimates.
-
-
 
 # NOTE: you do not need to handle the W argument for this part!
 # in:      X - N x d matrix of N data points
@@ -93,6 +88,7 @@ class BayesClassifier(object):
 def mlParams(X, labels, W=None):
     assert(X.shape[0]==labels.shape[0])
     Npts,Ndims = np.shape(X)
+
     classes = np.unique(labels)
     Nclasses = np.size(classes)
 
@@ -102,6 +98,22 @@ def mlParams(X, labels, W=None):
     mu = np.zeros((Nclasses,Ndims))
     sigma = np.zeros((Nclasses,Ndims,Ndims))
 
+    #extracting all points so we get vectors for each class
+    for idx,c in enumerate(classes):
+        idx = labels == c 
+        idx = np.where(labels==c)[0]
+        xlc = X[idx,:]
+        print(xlc)
+        print("\n")
+
+        mu[c] = np.mean(xlc, axis=0)        
+        print(mu)  
+
+        #print(xlc - mu[c])
+
+        for d in range(Ndims):
+            sigma[c,d,d] = np.sum((xlc - mu[c])**2)/np.size(xlc)
+        print(sigma)
     # TODO: fill in the code to compute mu and sigma!
     # ==========================
     
@@ -109,14 +121,16 @@ def mlParams(X, labels, W=None):
 
     return mu, sigma
 
-
+# ## Test the Maximum Likelihood estimates
+# 
+# Call `genBlobs` and `plotGaussian` to verify your estimates.
 
 def main():
     #returns generated datapoints and their label classes
     X, labels = genBlobs(centers=5)
-    print(X)
-    print(labels)
+
     mu, sigma = mlParams(X,labels)
+    #plots point and different classes with different colors
     plotGaussian(X,labels,mu,sigma)
 
 
